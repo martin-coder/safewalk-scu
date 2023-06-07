@@ -9,13 +9,46 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    // final theme = Theme.of(context);
 
     return MaterialApp(
       // title: 'SafeWalk Admin',
-      color: theme.colorScheme.primary,
+      theme: lightThemeData(context),
       home: const MyHomePage(),
     );
+  }
+
+  ThemeData lightThemeData(BuildContext context) {
+    return ThemeData(
+      scaffoldBackgroundColor: lightThemeColors(context).background,
+      textTheme: Theme.of(context).textTheme.apply(
+            bodyColor: const Color(0xFF5B6770), //<-- SEE HERE
+            displayColor: const Color(0xFF5B6770),
+          ), //<-- SEE HERE,
+      // appBarTheme: appBarTheme(context),
+      // inputDecorationTheme: inputDecorationData(context),
+      colorScheme: lightThemeColors(context),
+    );
+  }
+
+  ColorScheme lightThemeColors(context) {
+    return const ColorScheme(
+      brightness: Brightness.light,
+      primary: Color(0xFFB23234),
+      onPrimary: Color(0xFF5B6770),
+      secondary: Color(0xFFEAAA00),
+      onSecondary: Color(0xFF5B6770),
+      error: Color(0xFFF32424),
+      onError: Color(0xFF5B6770),
+      background: Color(0xFFE0D6B5),
+      onBackground: Color(0xFFFFFFFF),
+      surface: Color(0xFFFFFFFF),
+      onSurface: Color(0xFF323232),
+    );
+
+    TextTheme textTheme(context) {
+      return const TextTheme();
+    }
   }
 }
 
@@ -50,11 +83,8 @@ class MyHomePage extends StatelessWidget {
               },
             ),
           ),
-          Expanded(
-            child: Container(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              child: const WalkRequestsPage(),
-            ),
+          const Expanded(
+            child: WalkRequestsPage(),
           ),
         ],
       ),
@@ -69,151 +99,71 @@ class WalkRequestsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 45, bottom: 10, top: 5),
-                  child: Text(
-                    'Walk Requests',
-                    style: TextStyle(
-                      // Theme.of(context).textTheme.displayMedium,
-                      color: Theme.of(context).colorScheme.onBackground,
-                      fontSize: 40,
-                    ),
-                  ),
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: EdgeInsets.only(left: 45, bottom: 10, top: 5),
+                child: Text(
+                  'Walk Requests',
                 ),
               ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.all(0),
-                  decoration: BoxDecoration(
-                    // border: Border.all(color: Colors.black),
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10.0),
+            ),
+            Expanded(
+              child: DataTable(
+                headingRowColor: MaterialStateColor.resolveWith(
+                    (states) => Theme.of(context).colorScheme.surface),
+                dataRowColor: MaterialStateColor.resolveWith(
+                    (states) => Theme.of(context).colorScheme.surface),
+                columns: const [
+                  DataColumn(
+                    label: Text('Time'),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: DataTable(
-                      headingRowColor: MaterialStateColor.resolveWith(
-                          (states) => Colors.white),
-                      dataRowColor: MaterialStateColor.resolveWith(
-                          (states) => Colors.white),
-                      columns: const [
-                        DataColumn(
-                          label: Text('Time'),
-                        ),
-                        DataColumn(
-                          label: Text('Name'),
-                        ),
-                        DataColumn(
-                          label: Text('Current Location'),
-                        ),
-                        DataColumn(
-                          label: Text('Destination'),
-                        ),
-                        DataColumn(
-                          label: Text('Assign'),
-                        ),
-                        DataColumn(
-                          label: Text('Delete'),
-                        ),
-                      ],
-                      rows: [
-                        DataRow(
-                          cells: [
-                            const DataCell(Text('00:00')),
-                            const DataCell(Text('Helen Mirren')),
-                            const DataCell(Text('1234 Bellomy St')),
-                            const DataCell(Text('Graham')),
-                            DataCell(
-                              IconButton(
-                                icon: const Icon(Icons.person_add),
-                                onPressed: () {},
-                              ),
-                            ),
-                            DataCell(
-                              IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () {},
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                  DataColumn(
+                    label: Text('Name'),
                   ),
-                ),
+                  DataColumn(
+                    label: Text('Current Location'),
+                  ),
+                  DataColumn(
+                    label: Text('Destination'),
+                  ),
+                  DataColumn(
+                    label: Text('Assign'),
+                  ),
+                  DataColumn(
+                    label: Text('Delete'),
+                  ),
+                ],
+                rows: [
+                  DataRow(
+                    cells: [
+                      const DataCell(Text('00:00')),
+                      const DataCell(Text('Helen Mirren')),
+                      const DataCell(Text('1234 Bellomy St')),
+                      const DataCell(Text('Graham')),
+                      DataCell(
+                        IconButton(
+                          icon: const Icon(Icons.person_add),
+                          onPressed: () {},
+                        ),
+                      ),
+                      DataCell(
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {},
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    // border: Border.all(color: Colors.black),
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: DataTable(
-                      headingRowColor: MaterialStateColor.resolveWith(
-                          (states) => Colors.white),
-                      dataRowColor: MaterialStateColor.resolveWith(
-                          (states) => Colors.white),
-                      columns: const [
-                        DataColumn(
-                          label: Text('Time'),
-                        ),
-                        DataColumn(
-                          label: Text('Name'),
-                        ),
-                        DataColumn(
-                          label: Text('Current Location'),
-                        ),
-                        DataColumn(
-                          label: Text('Destination'),
-                        ),
-                        DataColumn(
-                          label: Text('Assign'),
-                        ),
-                        DataColumn(
-                          label: Text('Delete'),
-                        ),
-                      ],
-                      rows: [
-                        DataRow(
-                          cells: [
-                            const DataCell(Text('00:00')),
-                            const DataCell(Text('Helen Mirren')),
-                            const DataCell(Text('1234 Bellomy St')),
-                            const DataCell(Text('Graham')),
-                            DataCell(
-                              IconButton(
-                                icon: const Icon(Icons.person_add),
-                                onPressed: () {},
-                              ),
-                            ),
-                            DataCell(
-                              IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () {},
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
