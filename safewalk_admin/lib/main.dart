@@ -51,10 +51,6 @@ class MyApp extends StatelessWidget {
       surface: Color(0xFFFFFFFF),
       onSurface: Color(0xFF323232),
     );
-
-    TextTheme textTheme(context) {
-      return const TextTheme();
-    }
   }
 }
 
@@ -105,73 +101,131 @@ class WalkRequestsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.only(left: 45, bottom: 10, top: 5),
-                child: Text(
-                  'Walk Requests',
-                ),
-              ),
-            ),
-            Expanded(
-              child: DataTable(
-                headingRowColor: MaterialStateColor.resolveWith(
-                    (states) => Theme.of(context).colorScheme.surface),
-                dataRowColor: MaterialStateColor.resolveWith(
-                    (states) => Theme.of(context).colorScheme.surface),
-                columns: const [
-                  DataColumn(
-                    label: Text('Time'),
-                  ),
-                  DataColumn(
-                    label: Text('Name'),
-                  ),
-                  DataColumn(
-                    label: Text('Current Location'),
-                  ),
-                  DataColumn(
-                    label: Text('Destination'),
-                  ),
-                  DataColumn(
-                    label: Text('Assign'),
-                  ),
-                  DataColumn(
-                    label: Text('Delete'),
-                  ),
-                ],
-                rows: [
-                  DataRow(
-                    cells: [
-                      const DataCell(Text('00:00')),
-                      const DataCell(Text('Helen Mirren')),
-                      const DataCell(Text('1234 Bellomy St')),
-                      const DataCell(Text('Graham')),
-                      DataCell(
-                        IconButton(
-                          icon: const Icon(Icons.person_add),
-                          onPressed: () {},
-                        ),
-                      ),
-                      DataCell(
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {},
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
+    return const Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        RoundedDataTable(
+          name: 'Walk Requests',
         ),
-      ),
+      ],
     );
   }
 }
+
+class RoundedDataTable extends StatelessWidget {
+  // final List<DataColumn> columns;
+  // final List<DataRow> rows;
+  final String name;
+
+  const RoundedDataTable({
+    super.key,
+    required this.name,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // constraints: const BoxConstraints.tightFor(
+      //     width: double.infinity, height: double.infinity),
+      margin: const EdgeInsets.all(25.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            blurRadius: 5.0,
+            spreadRadius: 2.0,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              name,
+              style: const TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          DataTable(
+            columns: const [
+              DataColumn(
+                label: Text('Time'),
+              ),
+              DataColumn(
+                label: Text('Name'),
+              ),
+              DataColumn(
+                label: Text('Current Location'),
+              ),
+              DataColumn(
+                label: Text('Destination'),
+              ),
+              DataColumn(
+                label: Text('Assign'),
+              ),
+              DataColumn(
+                label: Text('Delete'),
+              ),
+            ],
+            rows: [
+              walkRequestDataRow(
+                time: '00:00',
+                requestName: 'Hellen Mirren',
+                currentLocation: '4321 Alviso St',
+                destination: 'Graham',
+              ),
+            ],
+          ),
+          const SizedBox(height: 16.0),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextButton(
+              onPressed: () {
+                print('See More button pressed');
+                // Handle "see more" button click
+              },
+              child: const Text('See More'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  walkRequestDataRow(
+      {required String time,
+      required String requestName,
+      required String currentLocation,
+      required String destination}) {
+    return DataRow(
+      cells: [
+        DataCell(Text(time)),
+        DataCell(Text(requestName)),
+        DataCell(Text(currentLocation)),
+        DataCell(Text(destination)),
+        DataCell(
+          IconButton(
+            icon: const Icon(Icons.person_add),
+            onPressed: () {},
+          ),
+        ),
+        DataCell(
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () {},
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// DataRow walkRequestDataRow(String time, String requestName,
+//     String currentLocation, String destination) {
+  
+// }
