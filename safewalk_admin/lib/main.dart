@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/rendering.dart';
 import 'firebase_options.dart';
+import 'package:firebase_database/firebase_database.dart';
+
+List walkRequests = <WalkRequestData>[];
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -8,6 +12,15 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MyApp());
+}
+
+getDataFromDatabase() async {
+  DatabaseReference ref =
+      FirebaseDatabase.instance.ref('unassignedUsers/ac/name');
+  ref.onValue.listen((DatabaseEvent event) {
+    final data = event.snapshot.value;
+    print(data);
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -58,39 +71,68 @@ class MyApp extends StatelessWidget {
 
 // }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
   @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  var selectedIndex = 0;
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Row(
-        children: [
-          SafeArea(
-            child: NavigationRail(
-              extended: false,
-              destinations: const [
-                NavigationRailDestination(
-                  icon: Icon(Icons.directions_walk),
-                  label: Text('Walk Requests'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.people),
-                  label: Text('Walkers'),
-                ),
-              ],
-              selectedIndex: 0,
-              onDestinationSelected: (value) {
-                print('selected: $value');
-              },
+    Widget page;
+    switch (selectedIndex) {
+      case 0:
+        page = const WalkRequestsPage();
+        break;
+      case 1:
+        page = const Placeholder();
+        break;
+      default:
+        throw UnimplementedError('no widget for selectedIndex $selectedIndex');
+    }
+    return LayoutBuilder(builder: (context, constraints) {
+      return Scaffold(
+        body: Row(
+          children: [
+            SafeArea(
+              child: NavigationRail(
+                extended: constraints.maxWidth >= 950,
+                leading: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: 150,
+                    ),
+                    child:
+                        Image.asset('assets/images/White_Safe_Walk_Logo.png')),
+                destinations: const [
+                  NavigationRailDestination(
+                    icon: Icon(Icons.directions_walk),
+                    label: Text('Walk Requests'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.people),
+                    label: Text('Walkers'),
+                  ),
+                ],
+                selectedIndex: selectedIndex,
+                onDestinationSelected: (value) {
+                  setState(() {
+                    selectedIndex = value;
+                  });
+                },
+              ),
             ),
-          ),
-          const Expanded(
-            child: WalkRequestsPage(),
-          ),
-        ],
-      ),
-    );
+            Expanded(
+              // color: Theme.of(context).colorScheme.primaryContainer,
+              child: page,
+            ),
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -172,13 +214,13 @@ class RoundedDataTable extends StatelessWidget {
                 label: Text('Delete'),
               ),
             ],
-            rows: [
-              walkRequestDataRow(
-                time: '00:00',
-                requestName: 'Hellen Mirren',
-                currentLocation: '4321 Alviso St',
-                destination: 'Graham',
-              ),
+            rows: const [
+              // walkRequestDataRow(
+              //   time: '00:00',
+              //   requestName: 'Hellen Mirren',
+              //   currentLocation: '4321 Alviso St',
+              //   destination: 'Graham',
+              // ),
             ],
           ),
           const SizedBox(height: 16.0),
@@ -186,6 +228,7 @@ class RoundedDataTable extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: TextButton(
               onPressed: () {
+                getDataFromDatabase();
                 print('See More button pressed');
                 // Handle "see more" button click
               },
@@ -197,17 +240,13 @@ class RoundedDataTable extends StatelessWidget {
     );
   }
 
-  walkRequestDataRow(
-      {required String time,
-      required String requestName,
-      required String currentLocation,
-      required String destination}) {
+  walkRequestDataRow({required WalkRequestData walkRequestData}) {
     return DataRow(
       cells: [
-        DataCell(Text(time)),
-        DataCell(Text(requestName)),
-        DataCell(Text(currentLocation)),
-        DataCell(Text(destination)),
+        DataCell(Text(walkRequestData.time)),
+        DataCell(Text(walkRequestData.name)),
+        DataCell(Text(walkRequestData.currentLocation)),
+        DataCell(Text(walkRequestData.destination)),
         DataCell(
           IconButton(
             icon: const Icon(Icons.person_add),
@@ -224,6 +263,25 @@ class RoundedDataTable extends StatelessWidget {
     );
   }
 }
+
+class WalkRequestData {
+  String time;
+  String name;
+  String currentLocation;
+  String destination;
+  WalkRequestData(this.time, this.name, this.currentLocation, this.destination);
+}
+/*
+1. Make some kind of walkRequestDataRow object
+2. Make a list of those objects called WalkRequests -- This will populate the table
+3. The table widget will listen for changes in the list
+4. The list will listen for changes from the database
+
+
+Make a struct that keeps all the data for a walk request in one place
+
+*/
+
 
 // DataRow walkRequestDataRow(String time, String requestName,
 //     String currentLocation, String destination) {
